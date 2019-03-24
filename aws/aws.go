@@ -236,6 +236,18 @@ func GetAllResources(regions []string, excludedRegions []string, excludeAfter ti
 		}
 		// End EKS resources
 
+		// VPC
+		vpcIds, err := getAllVPCs(session, region, excludeAfter)
+		if err != nil {
+			return nil, errors.WithStackTrace(err)
+		}
+
+		vpcs := VPCs{
+			VPCIds: awsgo.StringValueSlice(vpcIds),
+		}
+		resourcesInRegion.Resources = append(resourcesInRegion.Resources, vpcs)
+		// End VPC
+
 		account.Resources[region] = resourcesInRegion
 	}
 
