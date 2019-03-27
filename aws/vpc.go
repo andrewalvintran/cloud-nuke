@@ -37,9 +37,9 @@ func nukeAllVPCs(session *session.Session, vpcIds []*string) error {
 	logging.Logger.Infof("Deleting all the VPCs in region %s", *session.Config.Region)
 	var deletedVPCIds []*string
 
-	for _, vpcId := range vpcIds {
+	for _, vpcID := range vpcIds {
 		params := &ec2.DeleteVpcInput{
-			VpcId: vpcId,
+			VpcId: vpcID,
 		}
 
 		_, err := svc.DeleteVpc(params)
@@ -47,8 +47,8 @@ func nukeAllVPCs(session *session.Session, vpcIds []*string) error {
 		if err != nil {
 			logging.Logger.Errorf("[Failed] %s", err)
 		} else {
-			deletedVPCIds = append(deletedVPCIds, vpcId)
-			logging.Logger.Infof("Deleted VPC id: %s", *vpcId)
+			deletedVPCIds = append(deletedVPCIds, vpcID)
+			logging.Logger.Infof("Deleted VPC id: %s", *vpcID)
 		}
 	}
 
