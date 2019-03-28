@@ -11,7 +11,7 @@ type AwsAccountResources struct {
 }
 
 type AwsResources interface {
-	GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error)
+	GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error)
 	ResourceName() string
 	ResourceIdentifiers() []string
 	MaxBatchSize() int

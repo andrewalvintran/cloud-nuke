@@ -13,8 +13,8 @@ type LoadBalancersV2 struct {
 	Arns []string
 }
 
-// GetAllResources - Gets all the elbv2 names as a AwsResource
-func (balancer LoadBalancersV2) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the elbv2 names as a AwsResource
+func (balancer LoadBalancersV2) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	elbv2Arns, err := getAllElbv2Instances(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

@@ -13,8 +13,8 @@ type LaunchConfigs struct {
 	LaunchConfigurationNames []string
 }
 
-// GetAllResources - Gets all the launch configs as a AwsResource
-func (config LaunchConfigs) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the launch configs as a AwsResource
+func (config LaunchConfigs) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	configNames, err := getAllLaunchConfigurations(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

@@ -13,8 +13,8 @@ type EC2Instances struct {
 	InstanceIds []string
 }
 
-// GetAllResources - Gets all the ec2 instance ids as a AwsResource
-func (instance EC2Instances) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the ec2 instance ids as a AwsResource
+func (instance EC2Instances) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	instanceIds, err := getAllEc2Instances(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

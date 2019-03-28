@@ -13,8 +13,8 @@ type EBSVolumes struct {
 	VolumeIds []string
 }
 
-// GetAllResources - Gets all the ebs volumes as a AwsResource
-func (volume EBSVolumes) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the ebs volumes as a AwsResource
+func (volume EBSVolumes) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	volumeIds, err := getAllEbsVolumes(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

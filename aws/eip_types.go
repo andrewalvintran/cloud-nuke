@@ -13,8 +13,8 @@ type EIPAddresses struct {
 	AllocationIds []string
 }
 
-// GetAllResources - Gets all the EIP addresses as a AwsResource
-func (address EIPAddresses) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the EIP addresses as a AwsResource
+func (address EIPAddresses) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	allocationIds, err := getAllEIPAddresses(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

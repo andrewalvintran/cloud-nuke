@@ -13,8 +13,8 @@ type LoadBalancers struct {
 	Names []string
 }
 
-// GetAllResources - Gets all the elb names as a AwsResource
-func (balancer LoadBalancers) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the elb names as a AwsResource
+func (balancer LoadBalancers) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	elbNames, err := getAllElbInstances(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

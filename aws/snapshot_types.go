@@ -13,8 +13,8 @@ type Snapshots struct {
 	SnapshotIds []string
 }
 
-// GetAllResources - Gets all the snapshot ids as a AwsResource
-func (snapshot Snapshots) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the snapshot ids as a AwsResource
+func (snapshot Snapshots) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	snapshotIds, err := getAllSnapshots(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

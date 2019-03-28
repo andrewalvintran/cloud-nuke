@@ -13,8 +13,8 @@ type ASGroups struct {
 	GroupNames []string
 }
 
-// GetAllResources - Gets all the asg group names as a AwsResource
-func (group ASGroups) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the asg group names as a AwsResource
+func (group ASGroups) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	groupNames, err := getAllAutoScalingGroups(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

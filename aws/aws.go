@@ -102,12 +102,13 @@ func GetAllResources(regions []string, excludedRegions []string, excludeAfter ti
 		resourcesInRegion := AwsRegionResource{}
 
 		for _, awsResource := range allAWSResources {
-			resources, err := awsResource.GetAllResources(session, region, excludeAfter)
+			resources, err := awsResource.GetResources(session, region, excludeAfter)
 
 			if err != nil {
 				return nil, errors.WithStackTrace(err)
 			}
 
+			// For the EKS case since EKS is not supported in every region
 			if resources != nil {
 				resourcesInRegion.Resources = append(resourcesInRegion.Resources, resources)
 			}

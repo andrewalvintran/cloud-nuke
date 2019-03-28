@@ -14,8 +14,8 @@ type ECSServices struct {
 	ServiceClusterMap map[string]string
 }
 
-// GetAllResources - Gets all the ECS services as a AwsResource
-func (services ECSServices) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the ECS services as a AwsResource
+func (services ECSServices) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	clusterArns, err := getAllEcsClusters(session)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)

@@ -13,8 +13,8 @@ type EKSClusters struct {
 	Clusters []string
 }
 
-// GetAllResources - Gets all the EKS clusters as a AwsResource
-func (clusters EKSClusters) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the EKS clusters as a AwsResource
+func (clusters EKSClusters) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	if eksSupportedRegion(region) {
 		eksClusterNames, err := getAllEksClusters(session, excludeAfter)
 		if err != nil {

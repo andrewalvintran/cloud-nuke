@@ -13,8 +13,8 @@ type AMIs struct {
 	ImageIds []string
 }
 
-// GetAllResources - Gets all the ami image ids as a AwsResource
-func (image AMIs) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+// GetResources - Gets all the ami image ids as a AwsResource
+func (image AMIs) GetResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
 	imageIds, err := getAllAMIs(session, region, excludeAfter)
 	if err != nil {
 		return nil, errors.WithStackTrace(err)
