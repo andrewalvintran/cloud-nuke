@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -9,6 +11,20 @@ import (
 // EBSVolumes - represents all ebs volumes
 type EBSVolumes struct {
 	VolumeIds []string
+}
+
+// GetAllResources - Gets all the ebs volumes as a AwsResource
+func (volume EBSVolumes) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	volumeIds, err := getAllEbsVolumes(session, region, excludeAfter)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+
+	ebsVolumes := EBSVolumes{
+		VolumeIds: awsgo.StringValueSlice(volumeIds),
+	}
+
+	return ebsVolumes, nil
 }
 
 // ResourceName - the simple name of the aws resource

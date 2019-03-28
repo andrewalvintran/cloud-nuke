@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -9,6 +11,20 @@ import (
 // EBSVolumes - represents all ebs volumes
 type EIPAddresses struct {
 	AllocationIds []string
+}
+
+// GetAllResources - Gets all the EIP addresses as a AwsResource
+func (address EIPAddresses) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	allocationIds, err := getAllEIPAddresses(session, region, excludeAfter)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+
+	eipAddresses := EIPAddresses{
+		AllocationIds: awsgo.StringValueSlice(allocationIds),
+	}
+
+	return eipAddresses, nil
 }
 
 // ResourceName - the simple name of the aws resource

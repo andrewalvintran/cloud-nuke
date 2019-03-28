@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -9,6 +11,24 @@ import (
 // EKSClusters - Represents all EKS clusters found in a region
 type EKSClusters struct {
 	Clusters []string
+}
+
+// GetAllResources - Gets all the EKS clusters as a AwsResource
+func (clusters EKSClusters) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	if eksSupportedRegion(region) {
+		eksClusterNames, err := getAllEksClusters(session, excludeAfter)
+		if err != nil {
+			return nil, errors.WithStackTrace(err)
+		}
+
+		eksClusters := EKSClusters{
+			Clusters: awsgo.StringValueSlice(eksClusterNames),
+		}
+
+		return eksClusters, nil
+	}
+
+	return nil, nil
 }
 
 // ResourceName - The simple name of the aws resource

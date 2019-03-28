@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -9,6 +11,20 @@ import (
 // AMIs - represents all user owned AMIs
 type AMIs struct {
 	ImageIds []string
+}
+
+// GetAllResources - Gets all the ami image ids as a AwsResource
+func (image AMIs) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	imageIds, err := getAllAMIs(session, region, excludeAfter)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+
+	amis := AMIs{
+		ImageIds: awsgo.StringValueSlice(imageIds),
+	}
+
+	return amis, nil
 }
 
 // ResourceName - the simple name of the aws resource

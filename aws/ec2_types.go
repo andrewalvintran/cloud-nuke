@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -9,6 +11,20 @@ import (
 // EC2Instances - represents all ec2 instances
 type EC2Instances struct {
 	InstanceIds []string
+}
+
+// GetAllResources - Gets all the ec2 instance ids as a AwsResource
+func (instance EC2Instances) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	instanceIds, err := getAllEc2Instances(session, region, excludeAfter)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+
+	ec2Instances := EC2Instances{
+		InstanceIds: awsgo.StringValueSlice(instanceIds),
+	}
+
+	return ec2Instances, nil
 }
 
 // ResourceName - the simple name of the aws resource

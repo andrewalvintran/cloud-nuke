@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -11,7 +13,21 @@ type ASGroups struct {
 	GroupNames []string
 }
 
-// ResourceName - the simple name of the aws resource
+// GetAllResources - Gets all the asg group names as a AwsResource
+func (group ASGroups) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	groupNames, err := getAllAutoScalingGroups(session, region, excludeAfter)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+
+	asGroups := ASGroups{
+		GroupNames: awsgo.StringValueSlice(groupNames),
+	}
+
+	return asGroups, nil
+}
+
+// ResourceName - the simple name of the aws resour    ce
 func (group ASGroups) ResourceName() string {
 	return "asg"
 }

@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -9,6 +11,20 @@ import (
 // Snapshots - represents all user owned Snapshots
 type Snapshots struct {
 	SnapshotIds []string
+}
+
+// GetAllResources - Gets all the snapshot ids as a AwsResource
+func (snapshot Snapshots) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	snapshotIds, err := getAllSnapshots(session, region, excludeAfter)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+
+	snapshots := Snapshots{
+		SnapshotIds: awsgo.StringValueSlice(snapshotIds),
+	}
+
+	return snapshots, nil
 }
 
 // ResourceName - the simple name of the aws resource

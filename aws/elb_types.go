@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -9,6 +11,20 @@ import (
 // LoadBalancers - represents all load balancers
 type LoadBalancers struct {
 	Names []string
+}
+
+// GetAllResources - Gets all the elb names as a AwsResource
+func (balancer LoadBalancers) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	elbNames, err := getAllElbInstances(session, region, excludeAfter)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+
+	loadBalancers := LoadBalancers{
+		Names: awsgo.StringValueSlice(elbNames),
+	}
+
+	return loadBalancers, nil
 }
 
 // ResourceName - the simple name of the aws resource

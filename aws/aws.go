@@ -68,6 +68,22 @@ func GetAllResources(regions []string, excludedRegions []string, excludeAfter ti
 		Resources: make(map[string]AwsRegionResource),
 	}
 
+	// The order in which resources are nuked is important
+	// because of dependencies between resources
+	allAWSResources := []AwsResources{
+		ASGroups{},
+		LaunchConfigs{},
+		LoadBalancers{},
+		LoadBalancersV2{},
+		EC2Instances{},
+		EBSVolumes{},
+		EIPAddresses{},
+		AMIs{},
+		Snapshots{},
+		ECSServices{},
+		EKSClusters{},
+	}
+
 	for _, region := range regions {
 		// Ignore all cli excluded regions
 		if collections.ListContainsElement(excludedRegions, region) {
@@ -85,156 +101,17 @@ func GetAllResources(regions []string, excludedRegions []string, excludeAfter ti
 
 		resourcesInRegion := AwsRegionResource{}
 
-		// The order in which resources are nuked is important
-		// because of dependencies between resources
+		for _, awsResource := range allAWSResources {
+			resources, err := awsResource.GetAllResources(session, region, excludeAfter)
 
-		// ASG Names
-		groupNames, err := getAllAutoScalingGroups(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		asGroups := ASGroups{
-			GroupNames: awsgo.StringValueSlice(groupNames),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, asGroups)
-		// End ASG Names
-
-		// Launch Configuration Names
-		configNames, err := getAllLaunchConfigurations(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		configs := LaunchConfigs{
-			LaunchConfigurationNames: awsgo.StringValueSlice(configNames),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, configs)
-		// End Launch Configuration Names
-
-		// LoadBalancer Names
-		elbNames, err := getAllElbInstances(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		loadBalancers := LoadBalancers{
-			Names: awsgo.StringValueSlice(elbNames),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, loadBalancers)
-		// End LoadBalancer Names
-
-		// LoadBalancerV2 Arns
-		elbv2Arns, err := getAllElbv2Instances(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		loadBalancersV2 := LoadBalancersV2{
-			Arns: awsgo.StringValueSlice(elbv2Arns),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, loadBalancersV2)
-		// End LoadBalancerV2 Arns
-
-		// EC2 Instances
-		instanceIds, err := getAllEc2Instances(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		ec2Instances := EC2Instances{
-			InstanceIds: awsgo.StringValueSlice(instanceIds),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, ec2Instances)
-		// End EC2 Instances
-
-		// EBS Volumes
-		volumeIds, err := getAllEbsVolumes(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		ebsVolumes := EBSVolumes{
-			VolumeIds: awsgo.StringValueSlice(volumeIds),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, ebsVolumes)
-		// End EBS Volumes
-
-		// EIP Addresses
-		allocationIds, err := getAllEIPAddresses(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		eipAddresses := EIPAddresses{
-			AllocationIds: awsgo.StringValueSlice(allocationIds),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, eipAddresses)
-		// End EIP Addresses
-
-		// AMIs
-		imageIds, err := getAllAMIs(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		amis := AMIs{
-			ImageIds: awsgo.StringValueSlice(imageIds),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, amis)
-		// End AMIs
-
-		// Snapshots
-		snapshotIds, err := getAllSnapshots(session, region, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		snapshots := Snapshots{
-			SnapshotIds: awsgo.StringValueSlice(snapshotIds),
-		}
-
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, snapshots)
-		// End Snapshots
-
-		// ECS resources
-		clusterArns, err := getAllEcsClusters(session)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-		serviceArns, serviceClusterMap, err := getAllEcsServices(session, clusterArns, excludeAfter)
-		if err != nil {
-			return nil, errors.WithStackTrace(err)
-		}
-
-		ecsServices := ECSServices{
-			Services:          awsgo.StringValueSlice(serviceArns),
-			ServiceClusterMap: serviceClusterMap,
-		}
-		resourcesInRegion.Resources = append(resourcesInRegion.Resources, ecsServices)
-		// End ECS resources
-
-		// EKS resources
-		if eksSupportedRegion(region) {
-			eksClusterNames, err := getAllEksClusters(session, excludeAfter)
 			if err != nil {
 				return nil, errors.WithStackTrace(err)
 			}
 
-			eksClusters := EKSClusters{
-				Clusters: awsgo.StringValueSlice(eksClusterNames),
+			if resources != nil {
+				resourcesInRegion.Resources = append(resourcesInRegion.Resources, resources)
 			}
-			resourcesInRegion.Resources = append(resourcesInRegion.Resources, eksClusters)
 		}
-		// End EKS resources
 
 		account.Resources[region] = resourcesInRegion
 	}

@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
@@ -9,6 +11,7 @@ type AwsAccountResources struct {
 }
 
 type AwsResources interface {
+	GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error)
 	ResourceName() string
 	ResourceIdentifiers() []string
 	MaxBatchSize() int

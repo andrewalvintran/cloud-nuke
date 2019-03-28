@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"time"
+
 	awsgo "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gruntwork-io/gruntwork-cli/errors"
@@ -10,6 +12,25 @@ import (
 type ECSServices struct {
 	Services          []string
 	ServiceClusterMap map[string]string
+}
+
+// GetAllResources - Gets all the ECS services as a AwsResource
+func (services ECSServices) GetAllResources(session *session.Session, region string, excludeAfter time.Time) (AwsResources, error) {
+	clusterArns, err := getAllEcsClusters(session)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+	serviceArns, serviceClusterMap, err := getAllEcsServices(session, clusterArns, excludeAfter)
+	if err != nil {
+		return nil, errors.WithStackTrace(err)
+	}
+
+	ecsServices := ECSServices{
+		Services:          awsgo.StringValueSlice(serviceArns),
+		ServiceClusterMap: serviceClusterMap,
+	}
+
+	return ecsServices, nil
 }
 
 // ResourceName - The simple name of the aws resource
